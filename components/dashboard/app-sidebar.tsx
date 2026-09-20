@@ -5,14 +5,20 @@ import { usePathname } from "next/navigation"
 import {
   Activity,
   FileText,
+  GitBranch,
   History,
   LayoutDashboard,
+  Network,
   ScanLine,
   Settings,
   Shield,
   ShieldCheck,
+  Spline,
+  Waypoints,
   Wrench,
   X,
+  Boxes,
+  FlaskConical,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -22,12 +28,21 @@ const nav = [
     { href: "/scanner", label: "Configuration Scanner", icon: ScanLine },
     { href: "/compliance", label: "Compliance", icon: ShieldCheck },
   ]},
+  { section: "Advanced Analysis", items: [
+    { href: "/digital-twin", label: "Digital Twin", icon: Boxes },
+    { href: "/what-if", label: "What-If Simulator", icon: FlaskConical },
+    { href: "/attack-paths", label: "Attack-Path Explorer", icon: Waypoints },
+    { href: "/risk-engine", label: "Explainable Risk Engine", icon: Spline },
+  ]},
   { section: "Response", items: [
     { href: "/remediation", label: "Remediation", icon: Wrench },
+    { href: "/remediation-gate", label: "Safe Remediation Gate", icon: GitBranch },
+    { href: "/evidence", label: "Evidence Chain", icon: ShieldCheck },
     { href: "/reports", label: "Reports", icon: FileText },
     { href: "/history", label: "Scan History", icon: History },
   ]},
   { section: "System", items: [
+    { href: "/vendor-learning", label: "Vendor Learning", icon: Network },
     { href: "/settings", label: "Settings", icon: Settings },
   ]},
 ]
