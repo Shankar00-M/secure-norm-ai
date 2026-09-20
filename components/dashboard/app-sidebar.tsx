@@ -4,7 +4,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   Activity,
-  FileText,
+  Brain,
+ FileText,
   GitBranch,
   History,
   LayoutDashboard,
@@ -18,7 +19,9 @@ import {
   Wrench,
   X,
   Boxes,
+  Crosshair,
   FlaskConical,
+  Workflow,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -40,6 +43,11 @@ const nav = [
     { href: "/evidence", label: "Evidence Chain", icon: ShieldCheck },
     { href: "/reports", label: "Reports", icon: FileText },
     { href: "/history", label: "Scan History", icon: History },
+  ]},
+  { section: "Master Intelligence", items: [
+    { href: "/attack-simulation", label: "Attack Simulation Engine", icon: Crosshair },
+    { href: "/policy-compiler", label: "Intent → Policy Compiler", icon: Workflow },
+    { href: "/reasoning", label: "Security Reasoning Engine", icon: Brain },
   ]},
   { section: "System", items: [
     { href: "/vendor-learning", label: "Vendor Learning", icon: Network },
