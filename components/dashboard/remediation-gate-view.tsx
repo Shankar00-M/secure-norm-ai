@@ -194,7 +194,7 @@ function ReasonInput({
 }
 
 export function RemediationGateView() {
-  const [selectedId, setSelectedId] = useState(gateItems[0].id)
+  const [selectedId, setSelectedId] = useState(gateItems.find((g) => g.stage === "impact-checked")?.id ?? gateItems[0].id)
   const [items, setItems] = useState(gateItems)
   const [showReject, setShowReject] = useState(false)
   const [showCancel, setShowCancel] = useState(false)
