@@ -600,7 +600,7 @@ export const vendorMappings: VendorMapping[] = [
 // 6. SAFE REMEDIATION GATE
 // ──────────────────────────────────────────────────────────────────────────────
 
-export type GateStage = "proposed" | "validated" | "impact-checked" | "approved" | "applied" | "verified"
+export type GateStage = "proposed" | "validated" | "impact-checked" | "approved" | "applied" | "verified" | "rejected" | "cancelled"
 
 export type GateItem = {
   id: string
@@ -621,6 +621,12 @@ export type GateItem = {
   rollbackConfig: string
   verified: boolean
   verificationResult: string
+  rejectedBy: string | null
+  rejectedAt: string | null
+  rejectionReason: string | null
+  cancelledBy: string | null
+  cancelledAt: string | null
+  cancellationReason: string | null
 }
 
 export const gateItems: GateItem[] = [
@@ -632,12 +638,12 @@ export const gateItems: GateItem[] = [
     vendor: "Cisco",
     severity: "critical",
     framework: "NIST AC-17",
-    stage: "verified",
+    stage: "proposed",
     syntaxValid: true,
     syntaxReport: "Syntax validated against Cisco IOS-XE 17.9 parser. 0 errors, 0 warnings. All commands recognized.",
     impactReport: "Impact: Low. Removes cleartext management protocol. No production services depend on Telnet. SSH access preserved. 3 VTY lines affected.",
-    approver: "a.sharma",
-    approvedAt: "Mar 19, 2026 · 09:14",
+    approver: null,
+    approvedAt: null,
     beforeConfig: `line vty 0 4
  transport input telnet ssh
  password 7 08701E1D5D4C
@@ -656,8 +662,14 @@ line vty 0 4
  password 7 08701E1D5D4C
  login
  no exec-timeout`,
-    verified: true,
-    verificationResult: "Re-scan completed. NIST AC-17 now PASS. Telnet no longer detected on core-sw-01. Risk score reduced from 82 to 41.",
+    verified: false,
+    verificationResult: "Pending — not yet applied.",
+    rejectedBy: null,
+    rejectedAt: null,
+    rejectionReason: null,
+    cancelledBy: null,
+    cancelledAt: null,
+    cancellationReason: null,
   },
   {
     id: "GATE-002",
@@ -667,12 +679,12 @@ line vty 0 4
     vendor: "Juniper",
     severity: "critical",
     framework: "CIS 2.1.3",
-    stage: "approved",
+    stage: "validated",
     syntaxValid: true,
     syntaxReport: "Syntax validated against Junos 23.4 parser. 0 errors. SNMPv3 USM user configuration recognized.",
     impactReport: "Impact: Medium. Removes SNMPv2c polling. NMS must be reconfigured to use SNMPv3 credentials. Brief monitoring gap expected during cutover.",
-    approver: "a.sharma",
-    approvedAt: "Mar 19, 2026 · 10:02",
+    approver: null,
+    approvedAt: null,
     beforeConfig: `snmp {
     community public {
         authorization read-only;
@@ -697,7 +709,13 @@ line vty 0 4
     rollbackConfig: `delete snmp v3
 set snmp community public authorization read-only`,
     verified: false,
-    verificationResult: "Awaiting re-scan verification.",
+    verificationResult: "Pending — not yet applied.",
+    rejectedBy: null,
+    rejectedAt: null,
+    rejectionReason: null,
+    cancelledBy: null,
+    cancelledAt: null,
+    cancellationReason: null,
   },
   {
     id: "GATE-003",
@@ -732,7 +750,13 @@ set security policies from-zone Outside to-zone Inside policy any-allow
   match { source-address any; destination-address any; application any; }
   then { permit; }`,
     verified: false,
-    verificationResult: "Pending approval and application.",
+    verificationResult: "Pending — not yet applied.",
+    rejectedBy: null,
+    rejectedAt: null,
+    rejectionReason: null,
+    cancelledBy: null,
+    cancelledAt: null,
+    cancellationReason: null,
   },
   {
     id: "GATE-004",
@@ -771,6 +795,12 @@ end`,
 end`,
     verified: false,
     verificationResult: "Pending — not yet applied.",
+    rejectedBy: null,
+    rejectedAt: null,
+    rejectionReason: null,
+    cancelledBy: null,
+    cancelledAt: null,
+    cancellationReason: null,
   },
 ]
 
