@@ -1,8 +1,10 @@
 "use client"
 
-import { Bell, Menu, RefreshCw, Search, Sparkles } from "lucide-react"
+import { Bell, Menu, RefreshCw, Search, Sparkles, Clock } from "lucide-react"
+import { useLiveClockDisplay } from "@/lib/use-live-clock"
 
 export function TopBar({ onMenu }: { onMenu?: () => void }) {
+  const { time, date, timezone } = useLiveClockDisplay()
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-border/70 bg-background/80 px-4 backdrop-blur-md sm:px-6">
       <button
@@ -43,6 +45,13 @@ export function TopBar({ onMenu }: { onMenu?: () => void }) {
           <Bell className="size-4" />
           <span className="absolute right-2 top-2 size-1.5 rounded-full bg-[#f0596b]" />
         </button>
+        <div className="hidden items-center gap-2 rounded-lg border border-border/80 bg-secondary/40 px-3 py-1.5 md:flex">
+          <Clock className="size-3.5 text-primary" />
+          <div className="leading-tight">
+            <div className="font-mono text-xs font-medium tabular-nums text-foreground">{time}</div>
+            <div className="text-[10px] text-muted-foreground">{date} · {timezone}</div>
+          </div>
+        </div>
         <div className="ml-1 flex items-center gap-2.5 rounded-lg border border-border/80 bg-secondary/40 py-1 pl-1 pr-3">
           <div className="flex size-7 items-center justify-center rounded-md bg-gradient-to-br from-primary to-[#0e9488] text-xs font-semibold text-[#05201d]">
             AS

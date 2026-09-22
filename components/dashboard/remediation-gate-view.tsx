@@ -18,6 +18,7 @@ import {
 import { Card, CardHeader, SeverityBadge, StatusBadge } from "./ui"
 import { gateItems, type GateItem, type GateStage } from "@/lib/advanced-data"
 import { cn } from "@/lib/utils"
+import { nowISO, formatDateTime } from "@/lib/datetime"
 
 const forwardStages: GateStage[] = [
   "proposed",
