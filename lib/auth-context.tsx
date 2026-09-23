@@ -25,6 +25,44 @@ type AuthContextValue = AuthState & {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
+function mapAuthError(message: string | undefined, flow: "signin" | "signup"): string | null {
+  if (!message) return null
+  const lower = message.toLowerCase()
+
+  if (
+    lower.includes("failed to fetch") ||
+    lower.includes("load failed") ||
+    lower.includes("networkerror") ||
+    lower.includes("network request failed") ||
+    lower.includes("fetch")
+  ) {
+    return "Cannot reach SecureNorm authentication. Check NEXT_PUBLIC_SUPABASE_URL (https://foygjkrmnofenscwwam.supabase.co), NEXT_PUBLIC_SUPABASE_ANON_KEY, and that this Supabase project is active."
+  }
+  if (lower.includes("invalid login") || lower.includes("invalid credentials") || lower.includes("invalid email or password")) {
+    return "Invalid email or password."
+  }
+  if (lower.includes("email not confirmed")) {
+    return "Please confirm your email before signing in."
+  }
+  if (
+    lower.includes("already registered") ||
+    lower.includes("already been registered") ||
+    lower.includes("user already exists")
+  ) {
+    return "This email is already registered. Sign in instead."
+  }
+  if (lower.includes("signup is disabled")) {
+    return "Registration is currently disabled in Supabase Auth settings."
+  }
+  if (lower.includes("password")) {
+    return message
+  }
+  if (flow === "signup" && (lower.includes("database") || lower.includes("row-level") || lower.includes("rls"))) {
+    return "Account was created but company/profile setup failed. Check the existing tenant trigger and database policies."
+  }
+  return message
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
     loading: true,
@@ -60,6 +98,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setState({ loading: false, session: null, profile: null, tenant: null })
       }
+    }).catch(() => {
+      setState({ loading: false, session: null, profile: null, tenant: null })
     })
 
     const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
@@ -79,8 +119,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   async function signIn(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return { error: error?.message ?? null }
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      return { error: mapAuthError(error?.message, "signin") }
+    } catch (err) {
+      return { error: mapAuthError(err instanceof Error ? err.message : String(err), "signin") }
+    }
   }
 
   async function signUp(params: {
@@ -90,23 +134,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     companyName: string
     timezone?: string
   }) {
-    const { error } = await supabase.auth.signUp({
-      email: params.email,
-      password: params.password,
-      options: {
-        data: {
-          full_name: params.fullName,
-          company_name: params.companyName,
-          timezone: params.timezone ?? "UTC",
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: params.email,
+        password: params.password,
+        options: {
+          data: {
+            full_name: params.fullName,
+            company_name: params.companyName,
+            timezone: params.timezone ?? "UTC",
+          },
         },
-      },
-    })
-    return { error: error?.message ?? null }
+      })
+      return { error: mapAuthError(error?.message, "signup") }
+    } catch (err) {
+      return { error: mapAuthError(err instanceof Error ? err.message : String(err), "signup") }
+    }
   }
 
   async function signOut() {
-    await supabase.auth.signOut()
-    setState({ loading: false, session: null, profile: null, tenant: null })
+    try {
+      await supabase.auth.signOut()
+    } finally {
+      setState({ loading: false, session: null, profile: null, tenant: null })
+    }
   }
 
   async function refreshProfile() {

@@ -1,7 +1,29 @@
 import { createClient } from "@supabase/supabase-js"
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+const CORRECT_SUPABASE_URL = "https://foygjkrmnofenscwwam.supabase.co"
+const EXISTING_PUBLISHABLE_KEY = "sb_publishable_vQ_bBWfbv0496p-EyppM5Q__RxVA0MM"
+
+function resolveSupabaseUrl(raw: string | undefined): string {
+  const value = (raw ?? "").trim().replace(/\/$/, "")
+  if (!value) return CORRECT_SUPABASE_URL
+  // Truncated old host, or extra "j" typo from earlier commits.
+  if (
+    /https?:\/\/nofenscwwam\.supabase\.co/i.test(value) ||
+    /foygjkjrmnofenscwwam/i.test(value)
+  ) {
+    return CORRECT_SUPABASE_URL
+  }
+  return value
+}
+
+function resolveSupabaseAnonKey(raw: string | undefined): string {
+  const value = (raw ?? "").trim()
+  if (!value) return EXISTING_PUBLISHABLE_KEY
+  return value
+}
+
+const supabaseUrl = resolveSupabaseUrl(process.env.NEXT_PUBLIC_SUPABASE_URL)
+const supabaseAnonKey = resolveSupabaseAnonKey(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
